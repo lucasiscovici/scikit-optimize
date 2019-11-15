@@ -548,6 +548,7 @@ class BayesSearchCV(BaseSearchCV):
 
         # HACK: self.cv_results_ is reset at every call to _fit, keep current
         all_cv_results = self.cv_results_
+        ko=len(all_cv_results[list(all_cv_results.keys())[0]])
 
         # HACK: this adds compatibility with different versions of sklearn
         refit = self.refit
@@ -559,6 +560,9 @@ class BayesSearchCV(BaseSearchCV):
         for k in self.cv_results_:
             t=self.cv_results_[k]
             t=[None]*le if len(t)==0 else t
+            t2=all_cv_results[k]
+            if len(t2) == 0:
+                all_cv_results[k].extend([None]*ko)
             all_cv_results[k].extend(t)
 
         self.cv_results_ = all_cv_results

@@ -510,7 +510,7 @@ class BayesSearchCV(BaseSearchCV):
         self.best_estimator_.fit(X, y, **(self.fit_params or {}))
         return self
 
-    def _make_optimizer(self, params_space):
+    def _make_optimizer(self, params_space,i=None):
         """Instantiate skopt Optimizer class.
 
         Parameters
@@ -530,7 +530,8 @@ class BayesSearchCV(BaseSearchCV):
         kwargs = self.optimizer_kwargs_.copy()
         kwargs['dimensions'] = dimensions_aslist(params_space)
         optimizer = Optimizer(**kwargs)
-
+        if i is not None:
+            optimizer.id=i
         return optimizer
 
     def _step(self, X, y, search_space, optimizer, groups=None, n_points=1):
@@ -548,7 +549,12 @@ class BayesSearchCV(BaseSearchCV):
 
         # HACK: self.cv_results_ is reset at every call to _fit, keep current
         all_cv_results = self.cv_results_
-        ko=len(all_cv_results[list(all_cv_results.keys())[0]])
+        #print(list(all_cv_results.keys()))
+        r=list(all_cv_results.keys())
+        ko=0
+        if len(r)>0:
+            r=r[0]
+            ko=len(all_cv_results[r])
 
         # HACK: this adds compatibility with different versions of sklearn
         refit = self.refit
@@ -557,13 +563,21 @@ class BayesSearchCV(BaseSearchCV):
         self.refit = refit
         le=len(self.cv_results_[list(self.cv_results_.keys())[0]])
         # merge existing and new cv_results_
+        inAll=[]
         for k in self.cv_results_:
             t=self.cv_results_[k]
             t=[None]*le if len(t)==0 else t
             t2=all_cv_results[k]
             if len(t2) == 0:
                 all_cv_results[k].extend([None]*ko)
+            if k not in all_cv_results:
+                t=[None]*le
             all_cv_results[k].extend(t)
+        self.cv_results_["optimize"].extend([optimizer.id]*le)
+        for j in all_cv_results:
+            if j not in self.cv_results_:
+                t=[None]*le
+                all_cv_results[j].extend(t)
 
         self.cv_results_ = all_cv_results
         self.best_index_ = np.argmax(self.cv_results_['mean_test_score'])
@@ -638,10 +652,10 @@ class BayesSearchCV(BaseSearchCV):
 
         # Instantiate optimizers for all the search spaces.
         optimizers = []
-        for search_space in search_spaces:
+        for i_,search_space in enumerate(search_spaces):
             if isinstance(search_space, tuple):
                 search_space = search_space[0]
-            optimizers.append(self._make_optimizer(search_space))
+            optimizers.append(self._make_optimizer(search_space,i_))
         self.optimizers_ = optimizers  # will save the states of the optimizers
         self.optimizer_results_ = {}
         self.cv_results_ = defaultdict(list)

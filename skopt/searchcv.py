@@ -554,10 +554,12 @@ class BayesSearchCV(BaseSearchCV):
         self.refit = False
         self._fit(X, y, groups, params_dict)
         self.refit = refit
-
+        le=len(self.cv_results_[list(self.cv_results_.keys())[0]])
         # merge existing and new cv_results_
         for k in self.cv_results_:
-            all_cv_results[k].extend(self.cv_results_[k])
+            t=self.cv_results_[k]
+            t=[None]*le if len(t)==0 else t
+            all_cv_results[k].extend(t)
 
         self.cv_results_ = all_cv_results
         self.best_index_ = np.argmax(self.cv_results_['mean_test_score'])

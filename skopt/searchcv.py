@@ -662,7 +662,7 @@ class BayesSearchCV(BaseSearchCV):
                     groups=groups, n_points=n_points_adjusted
                 )
                 n_iter -= n_points
-
+                optim_result.optimizer=optimizer
                 if eval_callbacks(callbacks, optim_result):
                     break
             self.optimizer_results_[optimizer] = optim_result

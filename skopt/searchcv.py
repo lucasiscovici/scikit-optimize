@@ -573,14 +573,15 @@ class BayesSearchCV(BaseSearchCV):
             if k not in all_cv_results:
                 t=[None]*le
             all_cv_results[k].extend(t)
-        if "optimize" not in self.cv_results_:
-            self.cv_results_["optimize"]=[]
-        self.cv_results_["optimize"].extend([optimizer.id]*le)
          
         for j in all_cv_results:
-            if j not in self.cv_results_:
+            if j not in self.cv_results_ and j != "optimize":
                 t=[None]*le
                 all_cv_results[j].extend(t)
+               
+        if "optimize" not in all_cv_results:
+            all_cv_results["optimize"]=[]
+        all_cv_results["optimize"].extend([optimizer.id]*le)
 
         self.cv_results_ = all_cv_results
         self.best_index_ = np.argmax(self.cv_results_['mean_test_score'])

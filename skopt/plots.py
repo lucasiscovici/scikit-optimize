@@ -241,7 +241,7 @@ def _format_scatter_plot_axes(ax, space, ylabel, dim_labels=None):
                 else:
                     ax_.yaxis.set_major_locator(MaxNLocator(6, prune='both',
                                                             integer=iscat[i]))
-
+                ax_.set_ymargin(0.1)
             else:       # diagonal plots
                 ax_.set_ylim(*diagonal_ylim)
                 ax_.yaxis.tick_right()

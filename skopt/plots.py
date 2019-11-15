@@ -431,7 +431,7 @@ def plot_objective(result, levels=10, n_points=40, n_samples=250, size=2,
                                      dim_labels=dimensions)
 
 
-def plot_evaluations(result, bins=20, dimensions=None):
+def plot_evaluations(result, bins=20, dimensions=None,cmap="viridis"):
     """Visualize the order in which points where sampled.
     The scatter plot matrix shows at which points in the search
     space and in which order samples were evaluated. Pairwise
@@ -483,7 +483,7 @@ def plot_evaluations(result, bins=20, dimensions=None):
             # lower triangle
             elif i > j:
                 ax[i, j].scatter(samples[:, j], samples[:, i],
-                                 c=order, s=40, lw=0., cmap='viridis')
+                                 c=order, s=40, lw=0., cmap=cmap)
                 ax[i, j].scatter(minimum[j], minimum[i],
                                  c=['r'], s=20, lw=0.)
 

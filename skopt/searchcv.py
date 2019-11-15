@@ -573,7 +573,10 @@ class BayesSearchCV(BaseSearchCV):
             if k not in all_cv_results:
                 t=[None]*le
             all_cv_results[k].extend(t)
+        if "optimize" not in self.cv_results_:
+            self.cv_results_["optimize"]=[]
         self.cv_results_["optimize"].extend([optimizer.id]*le)
+         
         for j in all_cv_results:
             if j not in self.cv_results_:
                 t=[None]*le

@@ -380,8 +380,8 @@ class BayesSearchCV(BaseSearchCV):
         if self.verbose > 0 and isinstance(parameter_iterable, Sized):
             n_candidates = len(parameter_iterable)
             print("Fitting {0} folds for each of {1} candidates, totalling"
-                  " {2} fits".format(n_splits, n_candidates,
-                                     n_candidates * n_splits))
+                  " {2} fits ({3})".format(n_splits, n_candidates,
+                                     n_candidates * n_splits,parameter_iterable))
 
         base_estimator = clone(self.estimator)
         pre_dispatch = self.pre_dispatch
@@ -644,14 +644,15 @@ class BayesSearchCV(BaseSearchCV):
 
         n_points = self.n_points
 
-        for search_space, optimizer in zip(search_spaces, optimizers):
+        for i_,(search_space, optimizer) in enumerate(zip(search_spaces, optimizers)):
             # if not provided with search subspace, n_iter is taken as
             # self.n_iter
             if isinstance(search_space, tuple):
                 search_space, n_iter = search_space
             else:
                 n_iter = self.n_iter
-
+            if self.verbose > 0:
+                print("Optimisation of {}".format(i_))
             # do the optimization for particular search space
             while n_iter > 0:
                 # when n_iter < n_points points left for evaluation
